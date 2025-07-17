@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# @name Quad-Balloon Control
+# @type Quadrotor +
+# @class Copter
+#
+# @maintainer LareinaWei <lareinawei@gmail.com>
+# @output Motor1 (Thrust only)
+# @output Motor2 (Thrust only)
+# @output Motor3 (Pitch + Yaw)
+# @output Motor4 (Pitch - Yaw)
+#
+
+. ${R}etc/init.d/rc.mc_defaults
+
+# 设置 MAV_TYPE 为 Quadrotor
+param set-default MAV_TYPE 2
+
+# 启用控制分配器
+param set-default CA_ENABLE 1
+
+# === 几何设置 ===
+param set-default CA_ROTOR_COUNT 4
+
+# Rotor0 - 电机1 - 前右 - 用于上升/下降（正/反转）
+param set-default CA_ROTOR0_PX  0.2
+param set-default CA_ROTOR0_PY  0.2
+param set-default CA_ROTOR0_CT  1.0  # 仅用于推力
+# 允许 pitch/yaw/roll 输入全部为 0，表示不参与姿态控制
+
+# Rotor1 - 电机2 - 后左 - 用于上升/下降（正/反转）
+param set-default CA_ROTOR1_PX -0.2
+param set-default CA_ROTOR1_PY -0.2
+param set-default CA_ROTOR1_CT  1.0
+
+# Rotor2 - 电机3 - 后右 - 用于 yaw & pitch（正/反转）
+param set-default CA_ROTOR2_PX  0.2
+param set-default CA_ROTOR2_PY -0.2
+param set-default CA_ROTOR2_CT  0.0  # 不参与推力
+param set-default CA_ROTOR2_TRQ_Y  0.1  # Yaw 正向
+param set-default CA_ROTOR2_TRQ_P  0.1  # Pitch 正向
+
+# Rotor3 - 电机4 - 前左 - 用于 yaw & pitch（正/反转）
+param set-default CA_ROTOR3_PX -0.2
+param set-default CA_ROTOR3_PY  0.2
+param set-default CA_ROTOR3_CT  0.0  # 不参与推力
+param set-default CA_ROTOR3_TRQ_Y -0.1  # Yaw 反向
+param set-default CA_ROTOR3_TRQ_P -0.1  # Pitch 反向
+
+# === 电机函数映射 ===
+# 设置对应的输出通道功能，假设你使用 PWM 输出通道 1-4
+param set-default PWM_MAIN_FUNC1  Motor1
+param set-default PWM_MAIN_FUNC2  Motor2
+param set-default PWM_MAIN_FUNC3  Motor3
+param set-default PWM_MAIN_FUNC4  Motor4
+
+# === 启用电机正反转支持 ===
+# 设置使用双向 PWM（假设电调支持）
+# 设置 PWM 值为中心点控制逻辑（中点静止，正负转）
+param set-default PWM_MAIN_REV1_MASK 15  # 0b1111：通道1-4都支持反转
+param set-default PWM_MAIN_DISARMED 1500
+param set-default PWM_MAIN_MIN 1000
+param set-default PWM_MAIN_MAX 2000
+
+# 可选控制分配几何标记（若你想在 QGC 中选择构型）
+param set-default CA_AIRFRAME 358762
+
+# 推荐启用空气模式以确保控制器有效输出
+param set-default MC_AIRMODE 1

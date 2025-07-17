@@ -101,6 +101,9 @@ if(CONFIG_MODULES_MC_RATE_CONTROL)
 		16001_helicopter
 
 		24001_dodeca_cox
+
+		# new type for balloonRobot
+		358762_quad_balloon
 	)
 endif()
 
